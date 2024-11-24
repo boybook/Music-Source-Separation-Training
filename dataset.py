@@ -49,6 +49,8 @@ def get_track_set_length(params):
             print('Cant find file "{}" in folder {}'.format(instr, path))
             continue
         lengths_arr.append(length)
+    if len(lengths_arr) == 0:
+        print('folder {} have no instruments!'.format(path))
     lengths_arr = np.array(lengths_arr)
     if lengths_arr.min() != lengths_arr.max():
         print('Warning: lengths of stems are different for path: {}. ({} != {})'.format(
