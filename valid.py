@@ -61,9 +61,10 @@ def proc_list_of_files(
         mix, sr = sf.read(path)
         mix_orig = mix.copy()
 
+        orig_length = mix.shape[0]
+
         if 'sample_rate' in config.audio:
             if sr != config.audio['sample_rate']:
-                orig_length = mix.shape[0]
                 if verbose:
                     print('Warning: sample rate is different. In config: {} in file {}: {}'.format(config.audio['sample_rate'], path, sr))
                 mix = librosa.resample(mix, orig_sr=sr, target_sr=config.audio['sample_rate'], res_type='kaiser_best')
@@ -136,6 +137,11 @@ def proc_list_of_files(
                 if sr != config.audio['sample_rate']:
                     estimates = librosa.resample(estimates, orig_sr=config.audio['sample_rate'], target_sr=sr, res_type='kaiser_best')
                     estimates = librosa.util.fix_length(estimates, size=orig_length)
+
+            # 检查estimates的长度是否为orig_length，否则fix
+            if estimates.shape[0] != orig_length:
+                print('Warning: estimates length is different, fixing. In config: {} in file {}: {}'.format(orig_length, path, estimates.shape[0]))
+                estimates = librosa.util.fix_length(estimates, size=orig_length)
 
             # print(estimates.shape)
             if 'normalize' in config.inference:
